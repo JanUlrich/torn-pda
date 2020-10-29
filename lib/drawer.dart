@@ -1,8 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -21,8 +18,6 @@ import 'package:torn_pda/providers/settings_provider.dart';
 import 'package:torn_pda/providers/user_details_provider.dart';
 import 'package:torn_pda/providers/theme_provider.dart';
 import 'package:torn_pda/utils/changelog.dart';
-import 'package:torn_pda/utils/firebase_auth.dart';
-import 'package:torn_pda/utils/firestore.dart';
 import 'package:torn_pda/utils/notification.dart';
 import 'package:torn_pda/utils/shared_prefs.dart';
 import 'package:torn_pda/widgets/webviews/webview_full.dart';
@@ -54,8 +49,6 @@ class _DrawerPageState extends State<DrawerPage> with WidgetsBindingObserver {
   ThemeProvider _themeProvider;
   UserDetailsProvider _userProvider;
   SettingsProvider _settingsProvider;
-  final FirebaseMessaging _messaging = FirebaseMessaging();
-  final FirebaseAnalytics analytics = FirebaseAnalytics();
 
   Future _finishedWithPreferences;
 
@@ -117,24 +110,6 @@ class _DrawerPageState extends State<DrawerPage> with WidgetsBindingObserver {
     _handleChangelog();
     _finishedWithPreferences = _loadInitPreferences();
     _configureSelectNotificationSubject();
-
-    _messaging.requestNotificationPermissions(IosNotificationSettings(
-      sound: true,
-      badge: true,
-      alert: true,
-      provisional: false,
-    ));
-    _messaging.configure(
-      onResume: (message) {
-        return _fireLaunchResumeNotifications(message);
-      },
-      onLaunch: (message) {
-        return _fireLaunchResumeNotifications(message);
-      },
-      onMessage: (message) {
-        return showNotification(message);
-      },
-    );
 
     _tenSecTimer = new Timer.periodic(Duration(seconds: 10), (Timer t) => _refreshTctClock());
   }
@@ -558,18 +533,6 @@ class _DrawerPageState extends State<DrawerPage> with WidgetsBindingObserver {
       _selected = int.parse(defaultSection);
       _activeDrawerIndex = int.parse(defaultSection);
 
-      // Firestore get auth and init
-      var user = await firebaseAuth.currentUser();
-      if (user == null) {
-        User mFirebaseUser = await firebaseAuth.signInAnon();
-        firestore.setUID(mFirebaseUser.uid);
-        await firestore.uploadUsersProfileDetail(_userProvider.myUser);
-        await firestore.uploadLastActiveTime(DateTime.now().millisecondsSinceEpoch);
-      } else {
-        var uid = await firebaseAuth.getUID();
-        firestore.setUID(uid);
-      }
-
       // Update last used time in Firebase when the app opens (we'll do the same in onResumed,
       // since some people might leave the app opened for weeks in the background)
       _updateLastActiveTime();
@@ -585,7 +548,6 @@ class _DrawerPageState extends State<DrawerPage> with WidgetsBindingObserver {
     // If the recorded check is over 2 days, upload it to Firestore. 2 days allow for several
     // retries, even if Firebase makes inactive at 7 days (2 days here + 5 advertised)
     if (duration.inDays > 2) {
-      firestore.uploadLastActiveTime(now);
       _settingsProvider.updateLastUsed(now);
     }
   }

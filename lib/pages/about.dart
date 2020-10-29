@@ -21,8 +21,6 @@ class _AboutPageState extends State<AboutPage> {
   @override
   void initState() {
     super.initState();
-    analytics
-        .logEvent(name: 'section_changed', parameters: {'section': 'about'});
   }
 
   @override

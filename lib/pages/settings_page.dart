@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:expandable/expandable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:torn_pda/main.dart';
@@ -10,8 +9,6 @@ import 'package:torn_pda/models/profile/own_profile_model.dart';
 import 'package:torn_pda/providers/user_details_provider.dart';
 import 'package:torn_pda/providers/settings_provider.dart';
 import 'package:torn_pda/utils/api_caller.dart';
-import 'package:torn_pda/utils/firebase_auth.dart';
-import 'package:torn_pda/utils/firestore.dart';
 import 'package:torn_pda/utils/shared_prefs.dart';
 import 'package:torn_pda/widgets/settings/browser_info_dialog.dart';
 
@@ -54,9 +51,6 @@ class _SettingsPageState extends State<SettingsPage> {
     _restorePreferences();
     _ticker = new Timer.periodic(
         Duration(seconds: 60), (Timer t) => _timerUpdateInformation());
-    analytics.logEvent(
-        name: 'section_changed',
-        parameters: {'section': 'settings'});
   }
 
   @override
@@ -280,9 +274,6 @@ class _SettingsPageState extends State<SettingsPage> {
                                     _userToLoad = false;
                                     _apiError = false;
                                   });
-                                  await FirebaseMessaging().deleteInstanceID();
-                                  await firestore.deleteUserProfile();
-                                  await firebaseAuth.signOut();
                                 },
                               ),
                             ],
@@ -700,13 +691,6 @@ class _SettingsPageState extends State<SettingsPage> {
           ..userApiKeyValid = true;
         _userProvider.setUserDetails(userDetails: myProfile);
 
-        // Firestore uploading, but only if "Load" pressed by user
-        if (userTriggered) {
-          User mFirebaseUser = await firebaseAuth.signInAnon();
-          firestore.setUID(mFirebaseUser.uid);
-          await firestore.uploadUsersProfileDetail(myProfile, forceUpdate: true);
-          await firestore.uploadLastActiveTime(DateTime.now().millisecondsSinceEpoch);
-        }
       } else if (myProfile is ApiError) {
         setState(() {
           _apiIsLoading = false;

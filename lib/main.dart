@@ -1,8 +1,5 @@
 import 'dart:async';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -23,8 +20,6 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 
 // TODO: CONFIGURE FOR APP RELEASE, include exceptions in Drawer if applicable
 final String appVersion = '1.9.0';
-
-final FirebaseAnalytics analytics = FirebaseAnalytics();
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -49,16 +44,6 @@ Future<void> main() async {
       onSelectNotification: (String payload) async {
         selectNotificationSubject.add(payload);
       });
-
-  // ## FIREBASE
-  // Before any of the Firebase services can be used, FlutterFire needs to be initialized
-  await Firebase.initializeApp();
-  if (kDebugMode) {
-    // Only 'true' intended for debugging, otherwise leave in false
-    await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
-  }
-  // Pass all uncaught errors from the framework to Crashlytics
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
   runApp(
     MultiProvider(

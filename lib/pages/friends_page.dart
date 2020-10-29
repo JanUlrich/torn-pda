@@ -46,9 +46,6 @@ class _FriendsPageState extends State<FriendsPage> {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Provider.of<FriendsProvider>(context, listen: false).setFilterText('');
     });
-    analytics.logEvent(
-        name: 'section_changed',
-        parameters: {'section': 'friends'});
   }
 
   @override

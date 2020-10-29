@@ -68,8 +68,6 @@ class _LootPageState extends State<LootPage> {
 
     _getInitialLootInformation = _getLoot();
 
-    analytics.logEvent(name: 'section_changed', parameters: {'section': 'loot'});
-
     _tickerUpdateTimes = new Timer.periodic(Duration(seconds: 1), (Timer t) => _getLoot());
   }
 

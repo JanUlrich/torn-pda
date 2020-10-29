@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:torn_pda/models/firebase_user_model.dart';
-import 'package:torn_pda/utils/firestore.dart';
 
 import '../main.dart';
 
@@ -17,8 +16,6 @@ class _AlertsSettingsState extends State<AlertsSettings> {
   @override
   void initState() {
     super.initState();
-    _firestoreProfileReceived = firestore.getUserProfile();
-    analytics.logEvent(name: 'section_changed', parameters: {'section': 'alerts'});
   }
 
   @override
@@ -86,7 +83,6 @@ class _AlertsSettingsState extends State<AlertsSettings> {
                             setState(() {
                               _firebaseUserModel?.travelNotification = value;
                             });
-                            firestore.subscribeToTravelNotification(value);
                           },
                         ),
                       ),
@@ -102,7 +98,6 @@ class _AlertsSettingsState extends State<AlertsSettings> {
                             setState(() {
                               _firebaseUserModel?.energyNotification = value;
                             });
-                            firestore.subscribeToEnergyNotification(value);
                           },
                         ),
                       ),
@@ -118,7 +113,6 @@ class _AlertsSettingsState extends State<AlertsSettings> {
                             setState(() {
                               _firebaseUserModel?.nerveNotification = value;
                             });
-                            firestore.subscribeToNerveNotification(value);
                           },
                         ),
                       ),
@@ -135,7 +129,6 @@ class _AlertsSettingsState extends State<AlertsSettings> {
                             setState(() {
                               _firebaseUserModel?.hospitalNotification = value;
                             });
-                            firestore.subscribeToHospitalNotification(value);
                           },
                         ),
                       ),

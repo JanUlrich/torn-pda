@@ -59,4 +59,6 @@ It was conceived to enhance the experience of playing Torn from a mobile platfor
 
 Please feel free to contribute by starting a pull request or raising an issue!
 
+# BUILD
+* `flutter build apk`
 

@@ -28,9 +28,6 @@ class _ChainingPageState extends State<ChainingPage> {
     _bottomNavPageController = PageController(
       initialPage: 0,
     );
-    analytics.logEvent(
-        name: 'section_changed',
-        parameters: {'section': 'chaining'});
   }
 
   @override
